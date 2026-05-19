@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sentiment Analysis Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🤖 AI Sentiment Analysis Tool</h1>
+                <p>Analyze text sentiment with AI-powered classification</p>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navigation Tabs -->
+            <div class="nav-tabs">
+                <button class="tab-button active" data-tab="analyzer">Analyzer</button>
+                <button class="tab-button" data-tab="history">History</button>
+                <button class="tab-button" data-tab="dashboard">Dashboard</button>
+            </div>
+
+            <!-- Analyzer Tab -->
+            <div id="analyzer" class="tab-content active">
+                <div class="analyzer-container">
+                    <!-- Input Section -->
+                    <section class="input-section">
+                        <h2>📝 Analyze Text</h2>
+                        <div class="input-group">
+                            <label for="textInput">Enter text to analyze:</label>
+                            <textarea id="textInput" placeholder="Enter product reviews, tweets, customer feedback, or any text..." rows="6"></textarea>
+                            <small>💡 Tip: Separate multiple texts with new lines for batch analysis</small>
+                        </div>
+
+                        <div class="button-group">
+                            <button id="analyzeBtn" class="btn btn-primary">Analyze</button>
+                            <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                            <button id="batchBtn" class="btn btn-secondary">Batch Analysis</button>
+                        </div>
+
+                        <!-- Preset Examples -->
+                        <div class="presets">
+                            <h3>📌 Quick Examples:</h3>
+                            <div class="preset-buttons">
+                                <button class="preset-btn" data-preset="product">Product Review</button>
+                                <button class="preset-btn" data-preset="tweet">Tweet</button>
+                                <button class="preset-btn" data-preset="feedback">Customer Feedback</button>
+                                <button class="preset-btn" data-preset="movie">Movie Review</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Results Section -->
+                    <section class="results-section" id="resultsSection" style="display: none;">
+                        <h2>📊 Analysis Results</h2>
+                        <div class="result-card">
+                            <div class="sentiment-badge" id="sentimentBadge"></div>
+                            <div class="result-details">
+                                <p><strong>Sentiment:</strong> <span id="sentimentResult"></span></p>
+                                <p><strong>Confidence:</strong> <span id="confidenceResult"></span></p>
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" id="confidenceFill"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="explanation-card">
+                            <h3>💡 AI Explanation</h3>
+                            <p id="explanationResult"></p>
+                        </div>
+
+                        <button id="addToHistoryBtn" class="btn btn-primary">Add to History</button>
+                    </section>
+
+                    <!-- Statistics Section -->
+                    <section class="stats-section">
+                        <h2>📈 Quick Statistics</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h3>Total Analyses</h3>
+                                <p class="stat-value" id="totalAnalyses">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Positive</h3>
+                                <p class="stat-value positive" id="positiveCount">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Negative</h3>
+                                <p class="stat-value negative" id="negativeCount">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Neutral</h3>
+                                <p class="stat-value neutral" id="neutralCount">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>Avg Confidence</h3>
+                                <p class="stat-value" id="avgConfidence">0%</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history" class="tab-content">
+                <div class="history-container">
+                    <h2>📋 Sentiment History</h2>
+                    
+                    <!-- Search and Filter -->
+                    <div class="search-filter">
+                        <input type="text" id="searchInput" placeholder="Search history..." class="search-box">
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="positive">Positive</button>
+                            <button class="filter-btn" data-filter="negative">Negative</button>
+                            <button class="filter-btn" data-filter="neutral">Neutral</button>
+                        </div>
+                    </div>
+
+                    <!-- Export Options -->
+                    <div class="export-options">
+                        <button id="exportCsvBtn" class="btn btn-secondary">📥 Export CSV</button>
+                        <button id="exportPdfBtn" class="btn btn-secondary">📄 Export PDF</button>
+                        <button id="clearHistoryBtn" class="btn btn-danger">🗑️ Clear History</button>
+                    </div>
+
+                    <!-- History List -->
+                    <div id="historyList" class="history-list">
+                        <p class="empty-message">No analysis history yet. Start by analyzing some text!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content">
+                <div class="dashboard-container">
+                    <h2>📊 Analytics Dashboard</h2>
+                    
+                    <div class="charts-grid">
+                        <!-- Pie Chart -->
+                        <div class="chart-container">
+                            <h3>Sentiment Distribution (Pie)</h3>
+                            <canvas id="pieChart"></canvas>
+                        </div>
+
+                        <!-- Doughnut Chart -->
+                        <div class="chart-container">
+                            <h3>Sentiment Distribution (Doughnut)</h3>
+                            <canvas id="doughnutChart"></canvas>
+                        </div>
+
+                        <!-- Bar Chart -->
+                        <div class="chart-container full-width">
+                            <h3>Confidence Scores by Sentiment</h3>
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Statistics -->
+                    <div class="dashboard-stats">
+                        <h3>📊 Detailed Statistics</h3>
+                        <div class="stats-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Sentiment</th>
+                                        <th>Count</th>
+                                        <th>Percentage</th>
+                                        <th>Avg Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Positive</td>
+                                        <td id="dashPositiveCount">0</td>
+                                        <td id="dashPositivePercent">0%</td>
+                                        <td id="dashPositiveAvg">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Negative</td>
+                                        <td id="dashNegativeCount">0</td>
+                                        <td id="dashNegativePercent">0%</td>
+                                        <td id="dashNegativeAvg">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Neutral</td>
+                                        <td id="dashNeutralCount">0</td>
+                                        <td id="dashNeutralPercent">0%</td>
+                                        <td id="dashNeutralAvg">0%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 AI Sentiment Analysis Tool | Week 3 Project | All Rights Reserved</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
